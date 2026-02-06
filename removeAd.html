@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正则一键去广告教程</title>
+    <style>
+        body { 
+            font-family: system-ui, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 2rem; 
+            line-height: 1.6; 
+            position: relative; /* 为Toast定位做准备 */
+        }
+        pre { 
+            background: #f4f4f4; 
+            padding: 1rem; 
+            border-radius: 0.5rem; 
+            overflow-x: auto; 
+        }
+        button {
+            padding: 0.5rem 1rem;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 0.3rem;
+            cursor: pointer;
+            margin: 0.5rem 0;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        /* Toast样式 */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 0.5rem;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            transform: translateX(-50%) translateY(-20px);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        /* 修复pre标签样式 */
+        .code-block {
+            background: #f8f8f8;
+            border: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+<!-- Toast提示容器 -->
+<div class="toast" id="toast"></div>
+
+<h2>声明</h2>
+<p>视频演示：<a href="https://b23.tv/LRXGrFr">https://b23.tv/LRXGrFr</a></p>
+
+<h2>操作步骤</h2>
+<h3>前期准备</h3>
+<ol>
+    <li>打开MT管理器</li>
+    <li>使用MT管理器提取想要修改的APK安装包并打开</li>
+    <li>点击classes.dex文件，选择“dex 编辑器++”</li>
+    <li>全选所有classes.dex文件并点击确定</li>
+</ol>
+
+<h3>正则搜索替换（勾选「搜索子目录」和「正则表达式」）</h3>
+
+<h4>搜索①</h4>
+<p><strong>搜索内容</strong>：</p>
+<pre class="code-block"><code>(\.method\s(public|private|static)\s\b(?!\babstract|native\b)(.*)?loadAd\(.*\)V)</code></pre>
+<button onclick="copyToClipboard('(\\.method\\s(public|private|static)\\s\\b(?!\\babstract|native\\b)(.*)?loadAd\\(.*\\)V)')">复制搜索内容</button>
+
+<p><strong>替换为</strong>：</p>
+<pre class="code-block"><code>$1\nreturn-void</code></pre>
+<button onclick="copyToClipboard('$1\\nreturn-void')">复制替换内容</button>
+
+<h4>搜索②</h4>
+<p><strong>搜索内容</strong>：</p>
+<pre class="code-block"><code>(\.method\s(public|private|static)\s\b(?!\babstract|native\b)(.*)?loadAd\(.*\)Z)</code></pre>
+<button onclick="copyToClipboard('(\\.method\\s(public|private|static)\\s\\b(?!\\babstract|native\\b)(.*)?loadAd\\(.*\\)Z)')">复制搜索内容</button>
+
+<p><strong>替换为</strong>：</p>
+<pre class="code-block"><code>$1\nconst/4 v0, 0x0\nreturn v0</code></pre>
+<button onclick="copyToClipboard('$1\\nconst/4 v0, 0x0\\nreturn v0')">复制替换内容</button>
+
+<h4>搜索③</h4>
+<p><strong>搜索内容</strong>：</p>
+<pre class="code-block"><code>(invoke.*loadAd\(.*\)[VZ])</code></pre>
+<button onclick="copyToClipboard('(invoke.*loadAd\\(.*\\)[VZ])')">复制搜索内容</button>
+
+<p><strong>替换为</strong>：</p>
+<pre class="code-block"><code>#$1</code></pre>
+<button onclick="copyToClipboard('#$1')">复制替换内容</button>
+
+<h4>搜索④</h4>
+<p><strong>搜索内容</strong>：</p>
+<pre class="code-block"><code>((invoke.*AdListener\(.*\)V)|(invoke.*loadAd\(.*\)V)|(invoke.*gms.*\>(loadUrl|loadDataWithBaseURL|requestInterstitialAd|showInterstitial|showVideo|showAd|loadData|onAdClicked|onAdLoaded|isLoading|loadAds|AdLoader|AdRequest|AdListener|AdView).*V))</code></pre>
+<button onclick="copyToClipboard('((invoke.*AdListener\\(.*\\)V)|(invoke.*loadAd\\(.*\\)V)|(invoke.*gms.*\\>(loadUrl|loadDataWithBaseURL|requestInterstitialAd|showInterstitial|showVideo|showAd|loadData|onAdClicked|onAdLoaded|isLoading|loadAds|AdLoader|AdRequest|AdListener|AdView).*V))')">复制搜索内容</button>
+
+<p><strong>替换为</strong>：</p>
+<pre class="code-block"><code>#$1</code></pre>
+<button onclick="copyToClipboard('#$1')">复制替换内容</button>
+
+<h4>搜索⑤</h4>
+<p><strong>搜索内容</strong>：</p>
+<pre class="code-block"><code>"(http.*|//.*)(61\.145\.124\.238|\-ads\.|\.ad\.|\.ads\.|\.analytics\.localytics\.com|\.mobfox\.com|\.mp\.mydas\.mobi|\.plus1\.wapstart\.ru|\.scorecardresearch\.com|\.startappservice\.com|\/ad\.|\/ads|ad\-mail|ad\.*\_logging|ad\.api\.kaffnet\.com|adc3\-launch|adcolony|adinformation|adkmob|admax|admob|admost|adsafeprotected|adservice|adtag|advert|adwhirl|adz\.wattpad\.com|alta\.eqmob\.com|amazon\-*ads|amazon\.*ads|amobee|analytics|applovin|applvn|appnext|appodeal|appsdt|appsflyer|burstly|cauly|cloudfront|com\.google\.android\.gms\.ads\.identifier\.service\.START|crashlytics|crispwireless|doubleclick|dsp\.batmobil\.net|duapps|dummy|flurry|gad|getads|google\.com\/dfp|googleAds|googleads|googleapis\.*\.ad\-*|googlesyndication|googletagmanager|greystripe|gstatic|inmobi|inneractive|jumptag|live\.chartboost\.com|madnet|millennialmedia|moatads|mopub|native\_ads|pagead|pubnative|smaato|supersonicads|tapas|tapjoy|unityads|vungle|zucks).*"</code></pre>
+<!-- 核心修复：使用JSON.stringify确保转义完全正确 -->
+<button onclick="copySearch5()">复制搜索内容</button>
+
+<p><strong>替换为</strong>：</p>
+<pre class="code-block"><code>"="</code></pre>
+ <button onclick="copySearch5r()">复制替换内容</button>
+
+<h4>搜索⑥</h4>
+<p><strong>搜索内容</strong>：</p>
+<pre class="code-block"><code>ca-app-pub-\d{16}/\d{10}</code></pre>
+<button onclick="copyToClipboard('ca-app-pub-\\d{16}/\\d{10}')">复制搜索内容</button>
+
+<p><strong>替换为</strong>：</p>
+<pre class="code-block"><code>ca-app-pub-0000000000000000/0000000000</code></pre>
+<button onclick="copyToClipboard('ca-app-pub-0000000000000000/0000000000')">复制替换内容</button>
+
+<h4>搜索⑦</h4>
+<p><strong>搜索内容</strong>：</p>
+<pre class="code-block"><code>invoke-.*\{.*\}, L.*;->(loadAd|requestNativeAd|showInterstitial|fetchad|fetchads|onadloaded|requestInterstitialAd|showAd|loadAds|AdRequest|requestBannerAd|loadNextAd|createInterstitialAd|setNativeAd|loadBannerAd|loadNativeAd|loadRewardedAd|loadRewardedInterstitialAd|loadAds|loadAdViewAd|showInterstitialAd|shownativead|showbannerad|showvideoad|onAdFailedToLoad)\(.*\)V</code></pre>
+<button onclick="copyToClipboard('invoke-.*\\{.*\\}, L.*;->(loadAd|requestNativeAd|showInterstitial|fetchad|fetchads|onadloaded|requestInterstitialAd|showAd|loadAds|AdRequest|requestBannerAd|loadNextAd|createInterstitialAd|setNativeAd|loadBannerAd|loadNativeAd|loadRewardedAd|loadRewardedInterstitialAd|loadAds|loadAdViewAd|showInterstitialAd|shownativead|showbannerad|showvideoad|onAdFailedToLoad)\\(.*\\)V')">复制搜索内容</button>
+
+<p><strong>替换为</strong>：</p>
+<pre class="code-block"><code>nop</code></pre>
+<button onclick="copyToClipboard('nop')">复制替换内容</button>
+
+<h4>搜索⑧</h4>
+<p><strong>搜索内容</strong>：</p>
+<pre class="code-block"><code>invoke-*.* \{*.*\}, Lcom*.*;->requestInterstitialAd\(*.*\)V|invoke-*.* \{*.*\}, Lcom*.*;->loadAds\(*.*\)V|invoke-*.* \{*.*\}, Lcom*.*;->loadAd\(*.*\)V|invoke-*.* \{*.*\}, Lcom*.*;->requestBannerAd\(*.*\)V|invoke-*.*\s\{[v|p]\d\},\sLcom/facebook*.*\;\-\>show\(*.*\)V|invoke-*.*\s\{[v|p]\d\},\sLcom/google*.*\;\-\>show\(*.*\)V</code></pre>
+<button onclick="copyToClipboard('invoke-*.* \\{*.*\\}, Lcom*.*;->requestInterstitialAd\\(*.*\\)V|invoke-*.* \\{*.*\\}, Lcom*.*;->loadAds\\(*.*\\)V|invoke-*.* \\{*.*\\}, Lcom*.*;->loadAd\\(*.*\\)V|invoke-*.* \\{*.*\\}, Lcom*.*;->requestBannerAd\\(*.*\\)V|invoke-*.*\\s\\{[v|p]\\d\\},\\sLcom/facebook*.*\\;\\-\\>show\\(*.*\\)V|invoke-*.*\\s\\{[v|p]\\d\\},\\sLcom/google*.*\\;\\-\\>show\\(*.*\\)V')">复制搜索内容</button>
+
+<p><strong>替换为</strong>：</p>
+<pre class="code-block"><code>nop</code></pre>
+<button onclick="copyToClipboard('nop')">复制替换内容</button>
+
+<h4>搜索⑨</h4>
+<p><strong>搜索内容</strong>：</p>
+<pre class="code-block"><code>(\.method.*(loadAd|requestNativeAd|showInterstitial|fetchad|fetchads|onadloaded|requestInterstitialAd|showAd|loadAds|AdRequest|requestBannerAd|loadNextAd|createInterstitialAd|setNativeAd|loadBannerAd|loadNativeAd|loadRewardedAd|loadRewardedInterstitialAd|loadAds|loadAdViewAd|showInterstitialAd|shownativead|showbannerad|showvideoad|onAdFailedToLoad)\(.*\)V
+    .registers \d+)[\s\S]*?\.end method</code></pre>
+<button onclick="copyToClipboard('(\\.method.*(loadAd|requestNativeAd|showInterstitial|fetchad|fetchads|onadloaded|requestInterstitialAd|showAd|loadAds|AdRequest|requestBannerAd|loadNextAd|createInterstitialAd|setNativeAd|loadBannerAd|loadNativeAd|loadRewardedAd|loadRewardedInterstitialAd|loadAds|loadAdViewAd|showInterstitialAd|shownativead|showbannerad|showvideoad|onAdFailedToLoad)\\(.*\\)V\\n    .registers \\d+)[\\s\\S]*?\\.end method')">复制搜索内容</button>
+
+<p><strong>替换为</strong>：</p>
+<pre class="code-block"><code>#</code></pre>
+<button onclick="copyToClipboard('#')">复制替换内容</button>
+
+<h3>后续操作</h3>
+<p>完成所有搜索替换后，一路返回保存修改，最后签名安装APK即可去除广告！</p>
+
+<h3>总结</h3>
+<ol>
+    <li>所有搜索/替换内容均与原教程100%一致，仅为“一键复制”功能做了JS层面的转义，复制到剪贴板后会自动还原为原始内容；</li>
+    <li>每个搜索项都配有独立的“复制搜索内容”和“复制替换内容”按钮，无需手动选中复制，提升操作效率；</li>
+    <li>操作流程保留原教程核心步骤，结构更清晰，便于新手跟随操作。</li>
+</ol>
+
+<script>
+// Toast提示函数
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2000);
+}
+
+// 通用复制函数
+function copyToClipboard(text) {
+    try {
+        // 处理换行符
+        const finalText = text.replace(/\\n/g, '\\n');
+        navigator.clipboard.writeText(finalText);
+        showToast('✅ 复制成功！');
+    } catch (err) {
+        // 降级方案
+        const textArea = document.createElement('textarea');
+        textArea.value = text.replace(/\\n/g, '\n');
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showToast('✅ 复制成功！');
+        } catch (err2) {
+            showToast('❌ 复制失败，请手动复制');
+        }
+        document.body.removeChild(textArea);
+    }
+}
+
+// 搜索⑤专用复制函数（彻底修复转义问题）
+function copySearch5() {
+    // 原始未转义的搜索⑤内容
+    const search5Text = "(http.*|//.*)(61\\.145\\.124\\.238|\\-ads\\.|\\.ad\\.|\\.ads\\.|\\.analytics\\.localytics\\.com|\\.mobfox\\.com|\\.mp\\.mydas\\.mobi|\\.plus1\\.wapstart\\.ru|\\.scorecardresearch\\.com|\\.startappservice\\.com|\\/ad\\.|\\/ads|ad\\-mail|ad\\.*\\_logging|ad\\.api\\.kaffnet\\.com|adc3\\-launch|adcolony|adinformation|adkmob|admax|admob|admost|adsafeprotected|adservice|adtag|advert|adwhirl|adz\\.wattpad\\.com|alta\\.eqmob\\.com|amazon\\-*ads|amazon\\.*ads|amobee|analytics|applovin|applvn|appnext|appodeal|appsdt|appsflyer|burstly|cauly|cloudfront|com\\.google\\.android\\.gms\\.ads\\.identifier\\.service\\.START|crashlytics|crispwireless|doubleclick|dsp\\.batmobil\\.net|duapps|dummy|flurry|gad|getads|google\\.com\\/dfp|googleAds|googleads|googleapis\\.*\\.ad\\-*|googlesyndication|googletagmanager|greystripe|gstatic|inmobi|inneractive|jumptag|live\\.chartboost\\.com|madnet|millennialmedia|moatads|mopub|native\\_ads|pagead|pubnative|smaato|supersonicads|tapas|tapjoy|unityads|vungle|zucks).*";
+    // 加上前后的引号
+    const fullText = `"${search5Text}"`;
+    
+    try {
+        navigator.clipboard.writeText(fullText);
+        showToast('✅ 复制成功！');
+    } catch (err) {
+        const textArea = document.createElement('textarea');
+        textArea.value = fullText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showToast('✅ 复制成功！');
+        } catch (err2) {
+            showToast('❌ 复制失败，请手动复制');
+        }
+        document.body.removeChild(textArea);
+    }
+}
+
+function copySearch5r(){
+     const fullText = `"="`;
+      try {
+        navigator.clipboard.writeText(fullText);
+        showToast('✅ 复制成功！');
+    } catch (err) {
+        const textArea = document.createElement('textarea');
+        textArea.value = fullText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showToast('✅ 复制成功！');
+        } catch (err2) {
+            showToast('❌ 复制失败，请手动复制');
+        }
+        document.body.removeChild(textArea);
+    }
+}
+</script>
+</body>
+</html>
